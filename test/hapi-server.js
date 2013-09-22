@@ -37,7 +37,8 @@ function startServer(callback, autoStart, port) {
 	var options = {
 		manifest : manifest,
 		callback : callback,
-		autoStart : !!autoStart
+		autoStart : !!autoStart,
+		logLevel : 'DEBUG'
 	};
 
 	var HapiServer = require('../index');
@@ -49,7 +50,7 @@ function startServer(callback, autoStart, port) {
 }
 
 describe('Hapi Server', function() {
-	var server = null;
+	var server = undefined;
 
 	before(function(done) {
 		server = startServer(done);
@@ -77,6 +78,8 @@ describe('Hapi Server', function() {
 	});
 
 	describe('can auto-start', function() {
+		var server = undefined;
+
 		before(function() {
 			server = startServer(undefined, true, 8001);
 		});
@@ -142,6 +145,17 @@ describe('Hapi Server', function() {
 					console.log('logged event after restarting server : loggingClient.eventCount = ' + loggingClient.eventCount);
 					expect(loggingClient.eventCount).to.equal(1);
 					expect(loggingClient.invalidEventCount).to.equal(0);
+
+					var loggingClient2 = require('runrightfast-logging-client')({
+						url : 'http://localhost:8001/log'
+					});
+					var event2 = {
+						tags : [ 'info' ],
+						data : 'test : loggingClient2 - can be restarted'
+					};
+					loggingClient2.log(event2);
+					console.log('logged event with loggingClient2');
+
 					done();
 				});
 			});
