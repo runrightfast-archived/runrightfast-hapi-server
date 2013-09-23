@@ -56,9 +56,10 @@ describe('Hapi Server', function() {
 		server = startServer(done);
 	});
 
-	after(function() {
+	after(function(done) {
 		server.stop(function() {
 			console.log('server has stopped');
+			done();
 		});
 	});
 
@@ -84,15 +85,10 @@ describe('Hapi Server', function() {
 			server = startServer(undefined, true, 8001);
 		});
 
-		after(function() {
-			setImmediate(function() {
-				server.stop(function() {
-					console.log('server has stopped');
-
-					server.stop(function() {
-						console.log('server should already be stopped');
-					});
-				});
+		after(function(done) {
+			server.stop(function() {
+				console.log('server has stopped');
+				done();
 			});
 		});
 
@@ -111,22 +107,30 @@ describe('Hapi Server', function() {
 			expect(loggingClient.invalidEventCount).to.equal(0);
 		});
 
-		it('starting the server, when it is already started causes no harm', function() {
+		it('starting the server, when it is already started causes no harm', function(done) {
 			server.start(function() {
 				console.log('Server should already be started');
-			});
-			var loggingClient = require('runrightfast-logging-client')({
-				url : 'http://localhost:8001/log'
+
+				var loggingClient = require('runrightfast-logging-client')({
+					url : 'http://localhost:8001/log'
+				});
+
+				var event = {
+					tags : [ 'info' ],
+					data : 'test : starting the server, when it is already started causes no harm'
+				};
+
+				loggingClient.log(event);
+				try {
+					expect(loggingClient.eventCount).to.equal(1);
+					expect(loggingClient.invalidEventCount).to.equal(0);
+				} catch (error) {
+					done(error);
+				}
+
+				done();
 			});
 
-			var event = {
-				tags : [ 'info' ],
-				data : 'test : starting the server, when it is already started causes no harm'
-			};
-
-			loggingClient.log(event);
-			expect(loggingClient.eventCount).to.equal(1);
-			expect(loggingClient.invalidEventCount).to.equal(0);
 		});
 
 		it('can be restarted', function(done) {
@@ -145,16 +149,6 @@ describe('Hapi Server', function() {
 					console.log('logged event after restarting server : loggingClient.eventCount = ' + loggingClient.eventCount);
 					expect(loggingClient.eventCount).to.equal(1);
 					expect(loggingClient.invalidEventCount).to.equal(0);
-
-					var loggingClient2 = require('runrightfast-logging-client')({
-						url : 'http://localhost:8001/log'
-					});
-					var event2 = {
-						tags : [ 'info' ],
-						data : 'test : loggingClient2 - can be restarted'
-					};
-					loggingClient2.log(event2);
-					console.log('logged event with loggingClient2');
 
 					done();
 				});
@@ -210,7 +204,19 @@ describe('Hapi Server', function() {
 			var HapiServer = require('../index');
 			var hapiServer = new HapiServer(options);
 
+			var loggingClient = require('runrightfast-logging-client')({
+				url : 'http://localhost:8003/log'
+			});
+
+			var event = {
+				tags : [ 'info' ],
+				data : 'test : can be specified via a function'
+			};
+
 			hapiServer.start(function() {
+				console.log('hapiServer.status = ' + hapiServer.status);
+				expect(hapiServer.status).to.equal('STARTED');
+				loggingClient.log(event);
 				hapiServer.stop();
 				done();
 			});
