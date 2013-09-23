@@ -17,15 +17,15 @@
 	"author":"Alfio Zappala",
 	"license":"Apache v2",
 	"dependencies":{
-		"hapi":"1.11.1",
-		"lout":"0.5.0",		
-		"handlebars":"1.0.12",
-		"furball":"0.3.3",
-		"lodash":"2.0.0",		
-		"log4js":"0.6.8",
-		"hoek":"1.0.3",
+		"hapi":"1.11.x",
+		"lout":"0.5.x",		
+		"handlebars":"1.0.x",
+		"furball":"0.3.x",
+		"lodash":"2.0.x",		
+		"log4js":"0.6.x",
+		"hoek":"1.0.x",
 		"runrightfast-commons":"git://github.com/runrightfast/runrightfast-commons.git#0.0.5",
-		"extend":"1.2.1"		
+		"extend":"1.2.x"		
 	},
 	"devDependencies":{
 		"grunt":"~0.4.1",
