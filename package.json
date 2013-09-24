@@ -1,6 +1,6 @@
 {
 	"name":"runrightfast-hapi-server",
-	"version":"0.0.6",
+	"version":"0.0.7",
 	"description":"RunRightFast Commons",
 	"repository":{
 		"type":"git",
@@ -24,7 +24,7 @@
 		"lodash":"2.0.x",		
 		"log4js":"0.6.x",
 		"hoek":"1.0.x",
-		"runrightfast-commons":"git://github.com/runrightfast/runrightfast-commons.git#0.0.6",
+		"runrightfast-commons":"git://github.com/runrightfast/runrightfast-commons.git#0.0.7",
 		"extend":"1.2.x"		
 	},
 	"devDependencies":{
@@ -36,7 +36,7 @@
 		"sinon-chai":"~2.4.0",
 		"grunt-mocha-cov":"~0.0.7",
 		"grunt-contrib-clean":"~0.5.0"	,
-		"runrightfast-logging-service-hapi-plugin":"git://github.com/runrightfast/runrightfast-logging-service-hapi-plugin.git#0.0.10",
-		"runrightfast-logging-client":"git://github.com/runrightfast/runrightfast-logging-client.git#0.0.9"
+		"runrightfast-logging-service-hapi-plugin":"git://github.com/runrightfast/runrightfast-logging-service-hapi-plugin.git#0.0.15",
+		"runrightfast-logging-client":"git://github.com/runrightfast/runrightfast-logging-client.git#0.0.10"
 	}
 }

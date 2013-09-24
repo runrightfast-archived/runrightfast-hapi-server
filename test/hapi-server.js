@@ -30,7 +30,9 @@ function startServer(callback, autoStart, port) {
 		plugins : {
 			'lout' : {},
 			'furball' : {},
-			'runrightfast-logging-service-hapi-plugin' : {}
+			'runrightfast-logging-service-hapi-plugin' : {
+				logRoutePath : '/api/runrightfast-logging-service/log'
+			}
 		}
 	};
 
@@ -50,7 +52,7 @@ function startServer(callback, autoStart, port) {
 }
 
 var loggingClient = require('runrightfast-logging-client')({
-	url : 'http://localhost:8000/log'
+	url : '/api/runrightfast-logging-service/log'
 });
 
 describe('Hapi Server', function() {
