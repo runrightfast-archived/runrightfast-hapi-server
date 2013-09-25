@@ -23,7 +23,7 @@ var log = logging.getLogger('runrighfast-hapi-server-test');
 
 var startServerCount = 0;
 
-function startServer(callback, autoStart, port) {
+function startServer(callback, autoStart, port, logLevel) {
 	startServerCount++;
 
 	log.info('****** startServer() args : ' + JSON.stringify({
@@ -51,7 +51,7 @@ function startServer(callback, autoStart, port) {
 			'runrightfast-logging-service-hapi-plugin' : {
 				logRoutePath : '/api/runrightfast-logging-service/log',
 				async : false,
-				logLevel : 'DEBUG'
+				logLevel : logLevel || 'ERROR'
 			}
 		}
 	};
@@ -60,7 +60,7 @@ function startServer(callback, autoStart, port) {
 		manifest : manifest,
 		callback : callback,
 		autoStart : !!autoStart,
-		logLevel : 'ERROR',
+		logLevel : logLevel || 'ERROR',
 		startCallback : function(error) {
 			log.info('*** ' + startServerCount + '[' + port + '] : startServer(): server started' + (error ? ' - ' + error : ''));
 		},
@@ -84,7 +84,7 @@ describe('Hapi Server', function() {
 	});
 
 	beforeEach(function(done) {
-		server = startServer(done, false, 8001);
+		server = startServer(done, false, 8001, 'DEBUG');
 	});
 
 	afterEach(function(done) {
