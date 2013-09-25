@@ -20,7 +20,7 @@ The only required option setting is the Hapi manifest
 
 ## Features
 * HapiServer is an EventEmitter, which emits the following events:  STARTED, STOPPED
-* If SIGTERM signal is received, then Hapi Server will be shutdown cleanly before the process exits
+* If _SIGTERM_ or _SIGINT_ signal is received, then Hapi Server will be shutdown cleanly before the process exits
  * If the process is exited for any other reason, then on process exit the Hapi Server will first be shutdown
 * The Hapi Server runs within its own [Domain](http://nodejs.org/api/domain.html#domain_domain)
   * if an uncaught exception bubbles to the top, then on the Domain 'error' event, 
@@ -36,9 +36,11 @@ The only required option setting is the Hapi manifest
   * String - which represents a CommonsJS module that exports a manifest object
 * autoStart - OPTIONAL - default is true
 * stopTimeout - OPTIONAL 
-  * the timeout in millisecond before forcefully terminating a connection. Defaults to 60000 (60 seconds)
+  * the timeout in millisecond before forcefully terminating a connection. Defaults to 10000 (10 seconds)
 * name - OPTIONAL - server name, which is also used as the logger name. Defaults to 'runrightfast-hapi-server'
 * logLevel - OPTIONAL - specifies the level of logging by the Hapi Server. Defaults to 'WARN'
+* startCallback - OPTIONAL - used to specify a callback function, which is invoked when the server is started
+* stopCallback - OPTIONAL - used to specify a callback function, which is invoked when the server is stopped
 
 ## HapiServer Interface - see the [code](https://github.com/runrightfast/runrightfast-hapi-server/blob/master/lib/hapi-server.js) 
 

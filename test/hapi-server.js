@@ -16,13 +16,23 @@
 
 'use strict';
 var expect = require('chai').expect;
+var lodash = require('lodash');
+
+var startServerCount = 0;
 
 function startServer(callback, autoStart, port) {
+	startServerCount++;
+
+	console.log('****** startServer() args : ' + JSON.stringify({
+		callback : callback,
+		autoStart : autoStart,
+		port : port
+	}));
 
 	var manifest = {
 		pack : {},
 		servers : [ {
-			port : port || 8000,
+			port : port,
 			options : {
 				labels : [ 'web' ]
 			}
@@ -40,7 +50,13 @@ function startServer(callback, autoStart, port) {
 		manifest : manifest,
 		callback : callback,
 		autoStart : !!autoStart,
-		logLevel : 'DEBUG'
+		logLevel : 'DEBUG',
+		startCallback : function(error) {
+			console.log('*** ' + startServerCount + '[' + port + '] : startServer(): server started - error :' + error);
+		},
+		stopCallback : function() {
+			console.log('*** ' + startServerCount + '[' + port + ']  : startServer(): server stopped.');
+		}
 	};
 
 	var HapiServer = require('../index');
@@ -52,19 +68,19 @@ function startServer(callback, autoStart, port) {
 }
 
 var loggingClient = require('runrightfast-logging-client')({
-	url : '/api/runrightfast-logging-service/log'
+	url : 'http://localhost:8000/api/runrightfast-logging-service/log'
 });
 
 describe('Hapi Server', function() {
 	var server = undefined;
 
-	before(function(done) {
-		server = startServer(done);
+	beforeEach(function(done) {
+		server = startServer(done, false, 8001);
 	});
 
-	after(function() {
+	afterEach(function(done) {
 		server.stop(function() {
-			console.log('*** after Hapi Server - server has stopped');
+			done();
 		});
 	});
 
@@ -92,26 +108,25 @@ describe('Hapi Server', function() {
 
 	});
 
-	it('can be restarted', function(done) {
-		var event = {
-			tags : [ 'info' ],
-			data : 'test : can be restarted'
-		};
-
+	it('restarting throws an error because it is not permitted', function(done) {
 		server.stop(function() {
-			server.start(function() {
-				loggingClient.log(event);
-				console.log('logged event after restarting server : loggingClient.eventCount = ' + loggingClient.eventCount);
+			try {
+				server.start(function(error) {
+					if (!error) {
+						done(new Error('restarting throws an error because it is not permitted'));
+					}
+				});
+				done(new Error('restarting throws an error because it is not permitted'));
+			} catch (error) {
 				done();
-			});
+			}
 		});
+
 	});
 
 	it('if already stopped, then stopping again cause no harm', function(done) {
-		var server2 = startServer(undefined, true, 8002);
-
-		server2.stop(function() {
-			server2.stop(done);
+		server.stop(function() {
+			server.stop(done);
 		});
 
 	});
@@ -142,7 +157,7 @@ describe('Hapi Server', function() {
 		var hapiServer = new HapiServer(options);
 
 		var loggingClient = require('runrightfast-logging-client')({
-			url : 'http://localhost:8003/log'
+			url : 'http://localhost:8003/api/runrightfast-logging-service/log'
 		});
 
 		var event = {
