@@ -18,12 +18,15 @@
 var expect = require('chai').expect;
 var lodash = require('lodash');
 
+var logging = require('runrightfast-commons').logging;
+var log = logging.getLogger('runrighfast-hapi-server-test');
+
 var startServerCount = 0;
 
 function startServer(callback, autoStart, port) {
 	startServerCount++;
 
-	console.log('****** startServer() args : ' + JSON.stringify({
+	log.info('****** startServer() args : ' + JSON.stringify({
 		callback : callback,
 		autoStart : autoStart,
 		port : port
@@ -34,14 +37,21 @@ function startServer(callback, autoStart, port) {
 		servers : [ {
 			port : port,
 			options : {
-				labels : [ 'web' ]
+				labels : [ 'api' ]
+			}
+		}, {
+			port : port + 1,
+			options : {
+				labels : [ 'api' ]
 			}
 		} ],
 		plugins : {
 			'lout' : {},
 			'furball' : {},
 			'runrightfast-logging-service-hapi-plugin' : {
-				logRoutePath : '/api/runrightfast-logging-service/log'
+				logRoutePath : '/api/runrightfast-logging-service/log',
+				async : false,
+				logLevel : 'DEBUG'
 			}
 		}
 	};
@@ -50,12 +60,12 @@ function startServer(callback, autoStart, port) {
 		manifest : manifest,
 		callback : callback,
 		autoStart : !!autoStart,
-		logLevel : 'DEBUG',
+		logLevel : 'ERROR',
 		startCallback : function(error) {
-			console.log('*** ' + startServerCount + '[' + port + '] : startServer(): server started - error :' + error);
+			log.info('*** ' + startServerCount + '[' + port + '] : startServer(): server started' + (error ? ' - ' + error : ''));
 		},
 		stopCallback : function() {
-			console.log('*** ' + startServerCount + '[' + port + ']  : startServer(): server stopped.');
+			log.info('*** ' + startServerCount + '[' + port + ']  : startServer(): server stopped.');
 		}
 	};
 
@@ -67,20 +77,21 @@ function startServer(callback, autoStart, port) {
 	return hapiServer;
 }
 
-var loggingClient = require('runrightfast-logging-client')({
-	url : 'http://localhost:8000/api/runrightfast-logging-service/log'
-});
-
 describe('Hapi Server', function() {
 	var server = undefined;
+	var loggingClient = require('runrightfast-logging-client')({
+		url : 'http://localhost:8001/api/runrightfast-logging-service/log'
+	});
 
 	beforeEach(function(done) {
 		server = startServer(done, false, 8001);
 	});
 
 	afterEach(function(done) {
-		server.stop(function() {
-			done();
+		setImmediate(function() {
+			server.stop(function() {
+				done();
+			});
 		});
 	});
 
@@ -89,13 +100,14 @@ describe('Hapi Server', function() {
 			tags : [ 'info' ],
 			data : 'test : log a valid event'
 		};
-
 		loggingClient.log(event);
+		expect(loggingClient.invalidEventCount).to.equal(0);
+		expect(loggingClient.eventCount).to.equal(1);
 	});
 
 	it('starting the server, when it is already started causes no harm', function(done) {
 		server.start(function() {
-			console.log('Server should already be started');
+			log.info('Server should already be started');
 
 			var event = {
 				tags : [ 'info' ],
@@ -166,7 +178,7 @@ describe('Hapi Server', function() {
 		};
 
 		hapiServer.start(function() {
-			console.log('hapiServer.status = ' + hapiServer.status);
+			log.info('hapiServer.status = ' + hapiServer.status);
 			expect(hapiServer.status).to.equal('STARTED');
 			loggingClient.log(event);
 			hapiServer.stop(done);
