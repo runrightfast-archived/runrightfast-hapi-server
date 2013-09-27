@@ -1,6 +1,6 @@
 {
 	"name":"runrightfast-hapi-server",
-	"version":"0.0.8",
+	"version":"0.0.9",
 	"description":"RunRightFast Commons",
 	"repository":{
 		"type":"git",
@@ -24,7 +24,7 @@
 		"lodash":"2.0.x",		
 		"log4js":"0.6.x",
 		"hoek":"1.0.x",
-		"runrightfast-commons":"git://github.com/runrightfast/runrightfast-commons.git#0.0.7",
+		"runrightfast-commons":"git://github.com/runrightfast/runrightfast-commons.git#0.0.8",
 		"extend":"1.2.x"		
 	},
 	"devDependencies":{
