@@ -1,6 +1,6 @@
 {
 	"name":"runrightfast-hapi-server",
-	"version":"0.0.12",
+	"version":"0.0.13",
 	"description":"RunRightFast Commons",
 	"repository":{
 		"type":"git",
@@ -17,7 +17,7 @@
 	"author":"Alfio Zappala",
 	"license":"Apache v2",
 	"dependencies":{
-		"hapi":"1.11.x",
+		"hapi":"1.12.x",
 		"lout":"0.5.x",		
 		"handlebars":"1.0.x",
 		"furball":"0.3.x",
