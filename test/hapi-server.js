@@ -124,12 +124,14 @@ describe('Hapi Server', function() {
 		server.stop(function() {
 			try {
 				server.start(function(error) {
+					console.error('callback error: ' + error);
 					if (!error) {
-						done(new Error('restarting throws an error because it is not permitted'));
+						done(new Error('restarting should throw an error because it is not permitted'));
 					}
 				});
-				done(new Error('restarting throws an error because it is not permitted'));
+				done(new Error('restarting should throw an error because it is not permitted'));
 			} catch (error) {
+				console.error('caught error: ' + error);
 				done();
 			}
 		});
